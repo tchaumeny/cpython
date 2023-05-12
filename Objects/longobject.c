@@ -6152,7 +6152,26 @@ int_is_integer_impl(PyObject *self)
     Py_RETURN_TRUE;
 }
 
+static PyObject *
+inspect(PyObject *self, PyObject *Py_UNUSED(ignored))
+{
+    PyLongObject* selfl = (PyLongObject*)self;
+    PyObject* res;
+
+    Py_ssize_t digits_count = _PyLong_DigitCount(selfl);
+
+    res = PyList_New(digits_count);
+
+    for (int i = 0; i < digits_count; i++) {
+        PyList_SET_ITEM(res, i, PyLong_FromLong((selfl)->long_value.ob_digit[i]));
+    }
+
+    return res;
+}
+
 static PyMethodDef long_methods[] = {
+    {"inspect", inspect, METH_NOARGS,
+    "Inspect this integer"},
     {"conjugate",       long_long_meth, METH_NOARGS,
      "Returns self, the complex conjugate of any int."},
     INT_BIT_LENGTH_METHODDEF
